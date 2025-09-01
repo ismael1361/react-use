@@ -4,7 +4,7 @@
     "description": "A collection of useful React hooks built with TypeScript",
     "main": "dist/index.js",
     "module": "dist/index.esm.js",
-    "types": "dist/types/index.d.ts",
+    "types": "dist/index.d.ts",
     "files": [
         "dist"
     ],
