@@ -1,5 +1,4 @@
-import { act } from "react";
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { useLocalStorage } from "./index";
 
 describe("useLocalStorage", () => {
