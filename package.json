@@ -1,0 +1,63 @@
+{
+    "name": "@ismael/react-use",
+    "version": "1.0.0",
+    "description": "A collection of useful React hooks built with TypeScript",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "npm run clean && npm run build:types && npm run build:bundles",
+        "clean": "rimraf dist",
+        "build:types": "tsc --emitDeclarationOnly --declaration --outDir dist/types",
+        "build:bundles": "rollup -c --bundleConfigAsCjs",
+        "dev": "rollup -c --bundleConfigAsCjs -w",
+        "test": "jest",
+        "test:watch": "jest --watchAll",
+        "prepublishOnly": "npm run build && npm test"
+    },
+    "keywords": [
+        "react",
+        "hooks",
+        "typescript",
+        "custom-hooks",
+        "react-hooks"
+    ],
+    "author": "ISMAEL1361",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ismael1361/react-use.git"
+    },
+    "bugs": {
+        "url": "https://github.com/ismael1361/react-use/issues"
+    },
+    "homepage": "https://github.com/ismael1361/react-use#readme",
+    "peerDependencies": {
+        "react": ">=16.8.0",
+        "react-dom": ">=16.8.0"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^25.0.0",
+        "@rollup/plugin-node-resolve": "^15.0.0",
+        "@rollup/plugin-terser": "^0.4.0",
+        "@rollup/plugin-typescript": "^11.0.0",
+        "@testing-library/jest-dom": "^6.0.0",
+        "@testing-library/react": "^16.3.0",
+        "@types/jest": "^29.0.0",
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "jest": "^29.0.0",
+        "jest-environment-jsdom": "^29.0.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "rimraf": "^6.0.1",
+        "rollup": "^3.0.0",
+        "rollup-plugin-dts": "^6.0.0",
+        "ts-jest": "^29.0.0",
+        "tslib": "^2.8.1",
+        "typescript": "^5.0.0"
+    }
+}
