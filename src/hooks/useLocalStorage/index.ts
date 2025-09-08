@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
+import { EventEmitter } from "@ismael1361/utils";
+
+const event = new EventEmitter<{
+	set: [id: string, key: string, value: any];
+}>();
 
 /**
  * Um hook customizado do React que persiste o estado no `localStorage` do navegador.
@@ -31,25 +36,43 @@ import { useState } from "react";
  * ```
  */
 export const useLocalStorage = <T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] => {
-    const [storedValue, setStoredValue] = useState<T>(() => {
-        try {
-            const item = window.localStorage.getItem(key);
-            return item ? JSON.parse(item) : initialValue;
-        } catch (error) {
-            console.error(`Error reading localStorage key "${key}":`, error);
-            return initialValue;
-        }
-    });
+	const id = useId();
 
-    const setValue = (value: T | ((val: T) => T)) => {
-        try {
-            const valueToStore = value instanceof Function ? value(storedValue) : value;
-            setStoredValue(valueToStore);
-            window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        } catch (error) {
-            console.error(`Error setting localStorage key "${key}":`, error);
-        }
-    };
+	const [storedValue, setStoredValue] = useState<T>(() => {
+		try {
+			const item = window.localStorage.getItem(key);
+			return item ? JSON.parse(item) : initialValue;
+		} catch (error) {
+			console.error(`Error reading localStorage key "${key}":`, error);
+			return initialValue;
+		}
+	});
 
-    return [storedValue, setValue];
+	useEffect(() => {
+		const handle = event.on("set", (_id, key, value) => {
+			if (key === key && _id !== id) {
+				setStoredValue(value);
+			}
+		});
+
+		return () => {
+			handle.stop();
+		};
+	}, [id, key]);
+
+	const setValue = useCallback(
+		(value: T | ((val: T) => T)) => {
+			try {
+				const valueToStore = value instanceof Function ? value(storedValue) : value;
+				setStoredValue(valueToStore);
+				window.localStorage.setItem(key, JSON.stringify(valueToStore));
+				event.emit("set", id, key, storedValue);
+			} catch (error) {
+				console.error(`Error setting localStorage key "${key}":`, error);
+			}
+		},
+		[id, key],
+	);
+
+	return [storedValue, setValue];
 };
