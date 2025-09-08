@@ -1,5 +1,5 @@
 {
-    "name": "@ismael/react-use",
+    "name": "@ismael1361/react-use",
     "version": "1.0.0",
     "description": "A collection of useful React hooks built with TypeScript",
     "main": "dist/index.js",
@@ -8,6 +8,11 @@
     "files": [
         "dist"
     ],
+    "private": false,
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
     "scripts": {
         "build": "npm run clean && npm run build:types && npm run build:bundles",
         "clean": "rimraf dist",
@@ -16,7 +21,8 @@
         "dev": "rollup -c --bundleConfigAsCjs -w",
         "test": "jest",
         "test:watch": "jest --watchAll",
-        "prepublishOnly": "npm run build && npm test"
+        "prepublishOnly": "npm run build && npm test",
+        "npm:publish": "npm run build && npm publish --access=public"
     },
     "keywords": [
         "react",
