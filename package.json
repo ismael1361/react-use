@@ -67,7 +67,7 @@
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
-		"@ismael1361/animation": "^1.0.1",
-		"@ismael1361/utils": "^1.0.0"
+		"@ismael1361/animation": "^1.0.5",
+		"@ismael1361/utils": "^1.0.1"
 	}
 }
