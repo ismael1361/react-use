@@ -4,7 +4,7 @@ import { useCountdown } from "./index";
 describe("useCountdown", () => {
 	it("should update the countdown over time", async () => {
 		const initialDate = new Date();
-		const target = new Date(initialDate.getTime() + 3000);
+		const target = new Date(initialDate.getTime() + 2000);
 
 		const { result } = renderHook(() =>
 			useCountdown(target, {
@@ -13,16 +13,18 @@ describe("useCountdown", () => {
 					if (date.difference <= 0) {
 						return "Finalizado";
 					}
-					return `Faltam ${date.seconds} segundos`;
+					return `Falta tempo`;
 				},
 			}),
 		);
+
+		expect(result.current).toBe("Falta tempo");
 
 		await waitFor(
 			() => {
 				expect(result.current).toBe("Finalizado");
 			},
-			{ timeout: 4000 },
+			{ timeout: 3500 },
 		);
 
 		expect(result.current).toBe("Finalizado");
