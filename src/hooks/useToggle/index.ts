@@ -15,6 +15,8 @@ import { useState, useCallback } from "react";
  *
  * @example
  * ```jsx
+ * import { useToggle } from "@ismael1361/react-use";
+ *
  * function ToggleComponent() {
  *   const [isVisible, toggleVisibility, show, hide] = useToggle(false);
  *

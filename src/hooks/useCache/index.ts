@@ -22,6 +22,8 @@ const cache = new Map<PropertyKey, any>();
  *
  * @example
  * ```jsx
+ * import { useCache } from "@ismael1361/react-use";
+ *
  * // Componente 1: Exibe e atualiza um contador
  * function CounterDisplay() {
  *   const [count, setCount] = useCache('sharedCounter', 0);

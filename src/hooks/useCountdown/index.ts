@@ -80,7 +80,7 @@ interface CountdownOptions {
  * @example
  * // Exemplo Básico
  * ```jsx
- * import { useCountdown } from './useCountdown'; // ajuste o caminho
+ * import { useCountdown } from '@ismael1361/react-use'; // ajuste o caminho
  *
  * const BasicCountdown = () => {
  *   // Contagem para 10 minutos a partir de agora
@@ -111,37 +111,32 @@ interface CountdownOptions {
  * ```
  */
 export const useCountdown = (targetDate: Date, options: Partial<CountdownOptions> = {}) => {
-	const { round, formatTime = "DD/MM/YYYY HH:mm", format = defaultFormat, interval, startDate = new Date() } = options;
+	const { round = "", formatTime = "DD/MM/YYYY HH:mm", format = defaultFormat, interval, startDate = new Date() } = options;
 	const [timeNow, setTimeNow] = useState(() => (startDate.getTime() > Date.now() ? startDate.getTime() : Date.now()));
 
 	useEffect(() => {
-		const { days, hours, minutes, months, years } = getIndex(targetDate.getTime(), timeNow, formatTime);
+		const targetTimestamp = targetDate.getTime();
+		if (timeNow >= targetTimestamp) return;
+
+		const { days, hours, minutes, months, years } = getIndex(targetTimestamp, timeNow, formatTime);
 		const intervalTime =
 			years > 0 ? 1000 * 60 * 60 * 24 * 365 : months > 0 ? 1000 * 60 * 60 * 24 * 30 : days > 0 ? 1000 * 60 * 60 * 24 : hours > 0 ? 1000 * 60 * 60 : minutes > 0 ? 1000 * 60 : 1000;
 
 		const currentInterval = setTimeout(
 			() => {
-				setTimeNow(startDate.getTime() > Date.now() ? startDate.getTime() : Date.now());
+				setTimeNow(Date.now());
 			},
 			typeof interval === "number" ? interval : intervalTime,
 		);
 
 		return () => clearTimeout(currentInterval);
-	}, [timeNow]);
+	}, [timeNow, targetDate, interval, startDate]);
 
 	const { difference, days, hours, minutes, months, seconds, years, formated } = getIndex(targetDate.getTime(), timeNow, formatTime);
 
 	const roundN = ["Y", "M", "D", "h", "m", "s"].findIndex((r) => r === round?.trim());
 
-	if (
-		difference < 0 ||
-		(years > 0 && roundN > 0) ||
-		(months > 0 && roundN > 1) ||
-		(days > 0 && roundN > 2) ||
-		(hours > 0 && roundN > 3) ||
-		(minutes > 0 && roundN > 4) ||
-		(seconds > 0 && roundN > 5)
-	) {
+	if ((years > 0 && roundN > 0) || (months > 0 && roundN > 1) || (days > 0 && roundN > 2) || (hours > 0 && roundN > 3) || (minutes > 0 && roundN > 4) || (seconds > 0 && roundN > 5)) {
 		return formated;
 	}
 

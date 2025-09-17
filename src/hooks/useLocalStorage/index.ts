@@ -5,6 +5,8 @@ const event = new EventEmitter<{
 	set: [id: string, key: string, value: any];
 }>();
 
+const cache = new Map<string, string>();
+
 /**
  * Um hook customizado do React que persiste o estado no `localStorage` do navegador.
  * Ele se comporta como o `useState`, mas o valor é automaticamente salvo no `localStorage`
@@ -17,6 +19,8 @@ const event = new EventEmitter<{
  *
  * @example
  * ```jsx
+ * import { useLocalStorage } from "@ismael1361/react-use";
+ *
  * function UserSettings() {
  *   const [name, setName] = useLocalStorage('userName', 'Visitante');
  *
@@ -43,8 +47,8 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T, (value: T 
 			const item = window.localStorage.getItem(key);
 			return item ? JSON.parse(item) : initialValue;
 		} catch (error) {
-			console.error(`Error reading localStorage key "${key}":`, error);
-			return initialValue;
+			const item = cache.get(key);
+			return item ? JSON.parse(item) : initialValue;
 		}
 	});
 
@@ -62,14 +66,16 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T, (value: T 
 
 	const setValue = useCallback(
 		(value: T | ((val: T) => T)) => {
+			const valueToStore = value instanceof Function ? value(storedValue) : value;
+
 			try {
-				const valueToStore = value instanceof Function ? value(storedValue) : value;
-				setStoredValue(valueToStore);
 				window.localStorage.setItem(key, JSON.stringify(valueToStore));
-				event.emit("set", id, key, storedValue);
 			} catch (error) {
-				console.error(`Error setting localStorage key "${key}":`, error);
+				cache.set(key, JSON.stringify(valueToStore));
 			}
+
+			setStoredValue(valueToStore);
+			event.emit("set", id, key, storedValue);
 		},
 		[id, key],
 	);
