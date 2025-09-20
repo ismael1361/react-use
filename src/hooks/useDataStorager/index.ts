@@ -41,7 +41,7 @@ import { useCache } from "../useCache";
  * }
  * ```
  */
-export const useDataStorager = <T>(key: PropertyKey, initialValue: T): [T, (value: T | ((val: T) => T)) => void] => {
+export const useDataStorager = <T>(key: PropertyKey, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
 	const [value, setValue] = useCache<T>(`__DataStorage__${key.toString()}__`, initialValue);
 	return [value, setValue];
 };

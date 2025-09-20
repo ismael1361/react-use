@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EventEmitter } from "@ismael1361/utils";
+import { useId } from "../useId";
 
 const event = new EventEmitter<{
 	set: [id: string, key: string, value: any];
@@ -39,7 +40,7 @@ const cache = new Map<string, string>();
  * }
  * ```
  */
-export const useLocalStorage = <T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] => {
+export const useLocalStorage = <T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
 	const id = useId();
 
 	const [storedValue, setStoredValue] = useState<T>(() => {

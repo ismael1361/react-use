@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, MutableRefObject } from "react";
+import { useCallback, useEffect, useRef, MutableRefObject } from "react";
 import { useCallbackRef } from "../useCallbackRef";
+import { useRefObserver } from "../useRefObserver";
 
 type Elements = Window | Document | HTMLElement;
 
@@ -84,14 +85,11 @@ export const useEventListener = <E extends EventListenerNames<T>, T extends Elem
 	const elementRef = useRef<T>(element?.current ?? (window as any));
 	const handleListener = useCallbackRef(listener);
 
-	const updateEvent = useCallback(
-		(after: T | null) => {
-			elementRef.current?.removeEventListener(event, handleListener as any);
-			after?.addEventListener(event, handleListener as any);
-			(elementRef as any).current = after;
-		},
-		[event, handleListener],
-	);
+	const updateEvent = useCallbackRef((after: T) => {
+		elementRef.current?.removeEventListener(event, handleListener as any);
+		after?.addEventListener(event, handleListener as any);
+		(elementRef as any).current = after;
+	});
 
 	useEffect(() => {
 		const targetElement = element?.current ?? (window as any);
@@ -102,19 +100,11 @@ export const useEventListener = <E extends EventListenerNames<T>, T extends Elem
 		};
 	}, [element?.current, updateEvent]);
 
-	return useMemo(() => {
-		return new Proxy<MutableRefObject<T>>(elementRef, {
-			get(target, prop) {
-				if (prop === "current") return elementRef.current;
-				return Reflect.get(target, prop);
-			},
-			set(target, prop, value) {
-				if (prop === "current") {
-					updateEvent(value);
-					return true;
-				}
-				return Reflect.set(target, prop, value);
-			},
-		});
-	}, [updateEvent]);
+	return useRefObserver<T>(
+		elementRef.current,
+		(element) => {
+			updateEvent(element);
+		},
+		[updateEvent],
+	);
 };

@@ -43,7 +43,7 @@ const cache = new Map<PropertyKey, any>();
  * }
  * ```
  */
-export const useCache = <T>(key: PropertyKey, initialValue: T): [T, (value: T | ((val: T) => T)) => void] => {
+export const useCache = <T>(key: PropertyKey, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
 	const id = useId();
 
 	const [storedValue, setStoredValue] = useState<T>(() => {

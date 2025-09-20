@@ -31,12 +31,12 @@ import { useState, useCallback } from "react";
  * }
  * ```
  */
-export function useToggle(initialState = false) {
+export function useToggle(initialState = false): [state: boolean, toggle: () => void, setTrue: () => void, setFalse: () => void] {
 	const [state, setState] = useState(initialState);
 
 	const toggle = useCallback(() => setState((prevState) => !prevState), []);
 	const setTrue = useCallback(() => setState(true), []);
 	const setFalse = useCallback(() => setState(false), []);
 
-	return [state, toggle, setTrue, setFalse] as const;
+	return [state, toggle, setTrue, setFalse];
 }

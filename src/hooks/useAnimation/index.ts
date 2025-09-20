@@ -14,12 +14,11 @@ import {
 	stagger,
 	sequence,
 	loop,
-	SharedValue,
 	SharedValues,
 	AnimationState,
 	AnimationProps,
 } from "@ismael1361/animation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 const ProcessProps = {
 	/**
