@@ -69,18 +69,14 @@ export const useRefObserver = <T>(initialValue: T, effect: EffectCallback<T>, de
 	useEffect(() => change(ref.current), [...deps]);
 
 	return useMemo(() => {
-		return new Proxy<MutableRefObject<T>>(ref as MutableRefObject<T>, {
-			get(target, prop) {
-				if (prop === "current") return ref.current;
-				return Reflect.get(target, prop);
+		return {
+			...ref,
+			get current() {
+				return ref.current;
 			},
-			set(target, prop, value) {
-				if (prop === "current") {
-					change(value);
-					return true;
-				}
-				return Reflect.set(target, prop, value);
+			set current(value) {
+				change(value);
 			},
-		});
+		};
 	}, []);
 };
