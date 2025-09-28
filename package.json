@@ -68,7 +68,7 @@
 	},
 	"dependencies": {
 		"@ismael1361/animation": "^1.0.6",
-		"@ismael1361/utils": "^1.0.3",
+		"@ismael1361/utils": "^1.0.4",
 		"history": "^5.3.0",
 		"query-string": "^9.3.1"
 	}

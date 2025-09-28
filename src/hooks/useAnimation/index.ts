@@ -19,6 +19,8 @@ import {
 	AnimationProps,
 } from "@ismael1361/animation";
 import { useMemo, useRef, useState } from "react";
+import { DOMAnimationHelpers, DOMElement, MarginDefinition } from "./Types";
+import { Color, interpolate } from "@ismael1361/utils";
 
 const ProcessProps = {
 	/**
@@ -273,6 +275,220 @@ const ProcessProps = {
 	 * ```
 	 */
 	loop,
+
+	/**
+	 * Cria um conjunto de helpers de animação para um elemento DOM específico.
+	 * Isso permite encadear animações diretamente em um elemento ou ref do React.
+	 *
+	 * @param {DOMElement | React.RefObject<DOMElement>} element O elemento DOM a ser animado, ou uma ref do React que aponta para ele.
+	 * @returns {DOMAnimationHelpers} Um objeto com métodos de animação específicos para o DOM (`opacity`, `width`, `height`, `margin`).
+	 * @example
+	 * ```tsx
+	 * const myDiv = useRef(null);
+	 *
+	 * useAnimation(function*() {
+	 *   // Anima a opacidade do div de 0 para 1
+	 *   yield* this.dom(myDiv).opacity(0, { to: 1, duration: 1000 });
+	 *
+	 *   // Em paralelo, anima a largura
+	 *   yield* this.dom(myDiv).width(100, { to: 200, unit: 'px', duration: 1000 });
+	 * });
+	 *
+	 * return <div ref={myDiv} style={{ width: 100, height: 100, backgroundColor: 'blue' }} />;
+	 * ```
+	 */
+	dom(element: DOMElement | React.RefObject<DOMElement>): DOMAnimationHelpers {
+		const e = element instanceof Element ? element : element?.current;
+		const self = this;
+
+		return {
+			opacity(value, config) {
+				return self.timing(
+					(i) => {
+						if (e) e.style.opacity = i.toFixed(2);
+					},
+					{
+						from: value,
+						...(config || {}),
+					},
+				);
+			},
+			width(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.width = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			height(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.height = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			margin(value, config) {
+				const { from, to, unit = "px", ...conf } = config || {};
+
+				const parseMargin = (m: MarginDefinition) => ({ top: m[0], right: m[1] || m[0], bottom: m[2] || m[0], left: m[3] || m[1] || m[0] });
+
+				const fromValue = { ...parseMargin(value), ...parseMargin(from || value) };
+				const toValue = parseMargin(to);
+
+				return self.timing(
+					(i) => {
+						const top = interpolate(i, [0, 1], [fromValue.top, toValue.top]);
+						const right = interpolate(i, [0, 1], [fromValue.right, toValue.right]);
+						const bottom = interpolate(i, [0, 1], [fromValue.bottom, toValue.bottom]);
+						const left = interpolate(i, [0, 1], [fromValue.left, toValue.left]);
+
+						if (e) e.style.margin = [top, right, bottom, left].map((v) => v.toFixed(2) + unit).join(" ");
+					},
+					{
+						from: 0,
+						to: 1,
+						...conf,
+					},
+				);
+			},
+			marginTop(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.marginTop = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			marginBottom(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.marginBottom = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			marginLeft(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.marginLeft = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			marginRight(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.marginRight = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			backgroundColor(value, config) {
+				const { from, to, ...conf } = config || {};
+				const fromColor = new Color(from || value);
+
+				return self.timing(
+					(i) => {
+						const color = fromColor.blend(to, i);
+						if (e) e.style.backgroundColor = color.toString();
+					},
+					{
+						from: 0,
+						to: 1,
+						...conf,
+					},
+				);
+			},
+			backgroundPosition(value, config) {
+				const { from, to, unit = "px", ...conf } = config || {};
+				const fromValue = from || value;
+				const toValue = to || value;
+
+				return self.timing(
+					(i) => {
+						const x = interpolate(i, [0, 1], [fromValue[0], toValue[0]]);
+						const y = interpolate(i, [0, 1], [fromValue[1], toValue[1]]);
+
+						if (e) e.style.backgroundPosition = [x.toFixed(2) + unit, y.toFixed(2) + unit].join(" ");
+					},
+					{
+						from: 0,
+						to: 1,
+						...conf,
+					},
+				);
+			},
+			backgroundPositionX(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.backgroundPositionX = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			backgroundPositionY(value, config) {
+				const { unit = "px", ...conf } = config || {};
+				return self.timing(
+					(i) => {
+						if (e) e.style.backgroundPositionY = i.toFixed(2) + unit;
+					},
+					{
+						from: value,
+						...conf,
+					},
+				);
+			},
+			backgroundSize(value, config) {
+				const { from, to, unit = "px", ...conf } = config || {};
+				const fromValue = [from?.[0] || value[0], from?.[1] || from?.[0] || value[1] || value[0]];
+				const toValue = [to?.[0] || value[0], to?.[1] || to?.[0] || value[1] || value[0]];
+
+				return self.timing(
+					(i) => {
+						const width = interpolate(i, [0, 1], [fromValue[0], toValue[0]]);
+						const height = interpolate(i, [0, 1], [fromValue[1], toValue[1]]);
+
+						if (e) e.style.backgroundSize = [width.toFixed(2) + unit, height.toFixed(2) + unit].join(" ");
+					},
+					{
+						from: 0,
+						to: 1,
+						...conf,
+					},
+				);
+			},
+		};
+	},
 };
 
 type AnimationFnProps = typeof ProcessProps;
