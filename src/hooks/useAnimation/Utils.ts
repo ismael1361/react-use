@@ -40,5 +40,6 @@ export const parseBoxShadow = (shadowString: string): BoxShadowDefinition[] => {
 				});
 			}
 		});
+
 	return shadows;
 };
