@@ -17,7 +17,7 @@ export interface BoxShadowDefinition {
 }
 
 export interface ValueType<T = number> extends Omit<TimingConfig, "from" | "to"> {
-	from?: T;
+	from: T;
 	to: T;
 }
 

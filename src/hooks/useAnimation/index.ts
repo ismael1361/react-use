@@ -12,17 +12,17 @@ const ProcessProps = {
 	 * Isso permite encadear animações diretamente em um elemento ou ref do React.
 	 *
 	 * @param {E | React.RefObject<E>} element O elemento DOM a ser animado, ou uma ref do React que aponta para ele.
-	 * @returns {DOMAnimationHelpers<E>} Um objeto com métodos de animação específicos para o DOM (`opacity`, `width`, `height`, `margin`).
+	 * @returns {DOMAnimationHelpers<E>} Um objeto com métodos de animação específicos para o DOM (`opacity`, `width`, `height`, `margin`, etc...).
 	 * @example
 	 * ```tsx
 	 * const myDiv = useRef(null);
 	 *
 	 * useAnimation(function*() {
 	 *   // Anima a opacidade do div de 0 para 1
-	 *   yield* this.dom(myDiv).opacity(0, { to: 1, duration: 1000 });
+	 *   yield* this.dom(myDiv).opacity({ from: 0, to: 1, duration: 1000 });
 	 *
 	 *   // Em paralelo, anima a largura
-	 *   yield* this.dom(myDiv).width(100, { to: 200, unit: 'px', duration: 1000 });
+	 *   yield* this.dom(myDiv).width({ from: 100, to: 200, unit: 'px', duration: 1000 });
 	 * });
 	 *
 	 * return <div ref={myDiv} style={{ width: 100, height: 100, backgroundColor: 'blue' }} />;
