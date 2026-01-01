@@ -1,5 +1,5 @@
 import { InputGenerator, create, SharedValues, AnimationState, AnimationProps } from "@ismael1361/animation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AnimationScope from "./AnimationScope";
 import DOMAnimationHelpers from "./DOMAnimationHelpers";
 import { DOMElement } from "./Types";
@@ -88,23 +88,24 @@ type AnimationFn<S extends AnimationState> = (this: AnimationFnProps, state: Sha
  */
 export const useAnimation = <S extends AnimationState>(animation: AnimationFn<S>, state: S = {} as S, deps: React.DependencyList = []) => {
 	const [render, setRender] = useState({});
-	const getRef = useRef<AnimationProps<S> | null>();
 
-	const gen = useMemo<AnimationProps<S>>(() => {
-		if (getRef.current) {
-			getRef.current.destroy();
-		}
+	const gen = useMemo(() => {
+		return create(animation.bind(ProcessProps) as any, state);
+	}, []);
 
-		getRef.current = create(animation.bind(ProcessProps) as any, state);
-
-		getRef.current.onChange(() => {
+	useEffect(() => {
+		const event = gen.onChange(() => {
 			setRender({});
 		});
 
-		getRef.current.restart();
+		gen.restart(state);
+		// setRender({});
 
-		return getRef.current;
-	}, deps);
+		return () => {
+			event.stop();
+			gen.stop(state);
+		};
+	}, [gen, ...deps]);
 
 	return useMemo(() => gen, [gen, render]);
 };

@@ -5,6 +5,9 @@ const terser = require("@rollup/plugin-terser");
 const current_package = require("./package.json");
 
 const dependencies = Object.keys(current_package?.dependencies || {});
+const devDependencies = Object.keys(current_package?.devDependencies || {});
+
+dependencies.push(...devDependencies);
 
 module.exports = {
 	input: "src/index.ts",
